@@ -1,0 +1,35 @@
+Payment Risk Modernization Project
+
+Project Overview
+
+The Payment Risk Modernization project is designed to improve fraud detection
+and transaction risk assessment for enterprise payment processing.
+
+Fraud Model Ownership
+
+Sarah Johnson is responsible for the fraud detection model.
+The ML Engineering team owns model development and deployment.
+The Risk Analytics team is responsible for model performance monitoring.
+
+Transaction Approval Rules
+
+Transactions with a risk score below 0.30 may be automatically approved.
+
+Transactions with a risk score between 0.30 and 0.70 require additional
+risk evaluation.
+
+Transactions with a risk score above 0.70 must be reviewed by the Risk
+Operations team before approval.
+
+Compliance Requirements
+
+All high-risk transactions must be retained for audit purposes.
+Risk decisions must include the model version and decision timestamp.
+
+Architecture
+
+The risk platform uses an event-driven architecture. Transaction events
+are published to Kafka and consumed by the risk scoring service.
+
+The risk scoring service retrieves customer and transaction features,
+generates a risk score, and stores the decision for downstream processing.
