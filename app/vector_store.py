@@ -6,7 +6,8 @@ def insert_chunk(
         document_type: str,
         source: str,
         chunk_id: int,
-        embedding: list[float]
+        embedding: list[float],
+        page_number: int | None = None
 ):
     connection = get_connection()
 
@@ -14,10 +15,10 @@ def insert_chunk(
         with connection.cursor() as cursor:
             cursor.execute(
                 """
-                INSERT INTO document_chunks (content, document_name, document_type, source, chunk_id, embedding)
-                VALUES (%s, %s, %s, %s, %s, %s)
+                INSERT INTO document_chunks (content, document_name, document_type, source, chunk_id, embedding, page_number)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
                 """,
-                (content, document_name, document_type, source, chunk_id, embedding)
+                (content, document_name, document_type, source, chunk_id, embedding, page_number)
             )
             connection.commit()
     finally:

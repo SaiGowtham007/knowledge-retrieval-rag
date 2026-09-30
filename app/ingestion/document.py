@@ -7,3 +7,4 @@ class DocumentChunk:
     document_type: str
     source: str
     chunk_id: int
+    page_number: int | None = None
