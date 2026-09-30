@@ -1,6 +1,6 @@
 import pymupdf
 
-def extract_text_from_pdf(file_path: str) ->  str:
+def extract_pages_from_pdf(file_path: str) ->  str:
     document = pymupdf.open(file_path)
 
     pages = []
@@ -9,10 +9,12 @@ def extract_text_from_pdf(file_path: str) ->  str:
 
         if text:
             pages.append(
-                "text" = text,
-                "page_number" = page_number
+                {
+                    "text": text,
+                    "page_number": page_number
+                }
             )
 
     document.close()
 
-    return "\n".join(pages)
+    return pages

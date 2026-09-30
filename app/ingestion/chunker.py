@@ -1,13 +1,16 @@
 from .document import DocumentChunk
 
 
-def create_chunks(
+
+def _build_chunks(
     text: str,
     document_name: str,
     document_type: str,
     source: str,
+    page_number: int,
     chunk_size: int = 500,
-    chunk_overlap: int = 50
+    chunk_overlap: int = 50,
+    starting_chunk_id: int = 0
 ) -> list[DocumentChunk]:
 
     paragraphs = []
@@ -20,7 +23,7 @@ def create_chunks(
 
     chunks = []
     current_chunk = ""
-    chunk_id = 0
+    chunk_id = starting_chunk_id
 
     for paragraph in paragraphs:
 
@@ -40,7 +43,8 @@ def create_chunks(
                         document_name=document_name,
                         document_type=document_type,
                         source=source,
-                        chunk_id=chunk_id
+                        chunk_id=chunk_id,
+                        page_number=page_number
                     )
                 )
 
@@ -49,12 +53,14 @@ def create_chunks(
             # Get approximately the last chunk_overlap characters
             overlap_text = current_chunk[-chunk_overlap:]
 
-            # Move backward until we reach a space
-            while overlap_text and not overlap_text.startswith(" "):
-                overlap_text = overlap_text[1:]
+            if " " in overlap_text:
+                overlap_text = overlap_text[
+                    overlap_text.find(" ") + 1:
+                ]
 
-            current_chunk = overlap_text.strip() + "\n\n" + paragraph + "\n\n"
-
+            current_chunk = (
+                overlap_text.strip() + "\n\n" + paragraph + "\n\n"
+          )
     if current_chunk:
 
         chunks.append(
@@ -63,8 +69,50 @@ def create_chunks(
                 document_name=document_name,
                 document_type=document_type,
                 source=source,
-                chunk_id=chunk_id
+                chunk_id=chunk_id,
+                page_number=page_number
             )
         )
 
     return chunks
+
+def create_chunks(
+    text: str,
+    document_name: str,
+    document_type: str,
+    source: str,
+    chunk_size: int = 500,
+    chunk_overlap: int = 50
+) -> list[DocumentChunk]:
+
+    return _build_chunks(
+        text=text,
+        document_name=document_name,
+        document_type=document_type,
+        source=source,
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap
+    )
+
+
+def create_page_chunks(
+    text: str,
+    document_name: str,
+    document_type: str,
+    source: str,
+    page_number: int,
+    chunk_size: int = 500,
+    chunk_overlap: int = 50,
+    starting_chunk_id: int = 0
+) -> list[DocumentChunk]:
+
+    return _build_chunks(
+        text=text,
+        document_name=document_name,
+        document_type=document_type,
+        source=source,
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap,
+        page_number=page_number,
+        starting_chunk_id=starting_chunk_id
+    )
