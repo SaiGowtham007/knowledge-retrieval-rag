@@ -5,7 +5,8 @@ from app.generation import generate_answer
 from app.relevance import filter_relevant_results
 from app.reranking.reranker import rerank_results
 
-question = "Who is responsible for the fraud detection model?"
+question = input("Enter your question: ")
+
 
 query_embedding = create_embedding(question)
 
@@ -16,8 +17,11 @@ results = search_similar_chunks(
 
 relevant_results = filter_relevant_results(results)
 
-reranked_results = rerank_results(relevant_results)
-
+reranked_results = rerank_results(
+    question=question,
+    results=relevant_results,
+    top_k=3
+)
 if not relevant_results:
     print("\n No Sufficiently Relevant information was found.")
 else:
@@ -43,5 +47,9 @@ else:
     for result in reranked_results:
         print(
             f"- {result[2]} "
-            f"(chunk {result[5]}, distance={result[6]:.4f})"
+        f"(chunk {result[5]}, "
+        f"page {result[6]}, "
+        f"version {result[8]}, "
+        f"status {result[9]}, "
+        f"distance={result[12]:.4f})"
         )

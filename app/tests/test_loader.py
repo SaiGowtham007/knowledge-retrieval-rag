@@ -1,13 +1,11 @@
-from app.ingestion.pdf_loader import extract_text_from_pdf
-from app.ingestion.docx_loader import extract_text_from_docx
+from docx import Document
 
-pdf_path = "data\pdf\PRFIP_Engineering_and_Operations_Documentation.pdf"
-docx_path = "data\docx\PRFIP_Business_Data_API_Model_Documentation.docx"
-pdf_text = extract_text_from_pdf(pdf_path)
-docx_text = extract_text_from_docx(docx_path)
+file_path = "data/docx/PRFIP_Business_Data_API_Model_Documentation.docx"
 
-print("PDF Text:")
-print(pdf_text[:3000])
+document = Document(file_path)
 
-print("\nDOCX Text:")
-print(docx_text[:3000])
+print("Paragraphs:", len(document.paragraphs))
+
+for i, paragraph in enumerate(document.paragraphs[:10]):
+    print(f"\nParagraph {i}: {len(paragraph.text)} characters")
+    print(paragraph.text[:200])
