@@ -5,16 +5,20 @@ from app.generation import generate_answer
 from app.relevance import filter_relevant_results
 from app.reranking.reranker import rerank_results
 from app.query_intent import detect_document_status, detect_version
+from app.hybrid_search import hybrid_search
+
 question = input("Enter your question: ")
 
 
 query_embedding = create_embedding(question)
 document_version = detect_version(question)
 document_status = detect_document_status(question)
-results = search_similar_chunks(
+results = hybrid_search(
+    question=question,
     query_embedding=query_embedding,
-    top_k=3,
-    document_status=document_status,
+    vector_top_k=10,
+    keyword_top_k=10,
+    document_status=document_status
 )
 relevant_results = filter_relevant_results(results)
 
