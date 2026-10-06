@@ -1,7 +1,7 @@
 def build_context(results) -> str:
     context_parts = []
 
-    for result in results:
+    for index, result in enumerate(results, start=1):
         content = result[1]
         document_name = result[2]
         chunk_id = result[5]
@@ -14,7 +14,8 @@ def build_context(results) -> str:
 
         context_parts.append(
             f"""
-Source: {document_name}
+[SOURCE {index}]
+Document: {document_name}
 Document ID: {document_id}
 Version: {document_version}
 Status: {document_status}
@@ -23,6 +24,7 @@ Owner: {owner}
 Page: {page_number}
 Chunk: {chunk_id}
 
+Content:
 {content}
 """
         )

@@ -23,11 +23,14 @@ Rules:
 2. If the context does not contain enough information, say:
    "I don't have sufficient information in the provided documents to answer this question."
 3. Give a concise, factual answer.
-4. After the answer, provide the source document and available metadata.
-5. Use the exact document name, version, status, and page number provided in the context.
-6. If the context contains conflicting information, do not silently choose one.
-   Explicitly state that the documents contain conflicting information and identify
-   the relevant sources.
+4. Cite the source or sources used by placing [SOURCE X] immediately
+   after the relevant statement.
+5. Only use source numbers that actually exist in the provided context.
+6. Do not create or modify source numbers.
+7. If multiple sources support the answer, cite all relevant sources.
+8. If the context contains conflicting information, do not silently choose one.
+   Explicitly state that the documents contain conflicting information
+   and cite the relevant sources.
 
 Context:
 {context}

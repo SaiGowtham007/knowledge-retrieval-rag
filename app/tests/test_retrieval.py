@@ -12,7 +12,8 @@ query_embedding = create_embedding(question)
 
 results = search_similar_chunks(
     query_embedding=query_embedding,
-    top_k=3
+    top_k=3,
+    document_status="CURRENT"
 )
 
 relevant_results = filter_relevant_results(results)
