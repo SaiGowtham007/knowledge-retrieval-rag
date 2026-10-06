@@ -20,12 +20,63 @@ def hybrid_search(
         top_k=keyword_top_k
     )
 
-    combined_results = vector_results + keyword_results
+    rrf_scores = {}
+    result_lookup = {}
 
-    unique_results = {}
-    
-    for result in combined_results:
-        result_id = result[0]
-        unique_results[result_id] = result
+    k = 60
 
-    return list(unique_results.values())
+    # -------------------------
+    # VECTOR RESULTS
+    # -------------------------
+    for rank, result in enumerate(vector_results, start=1):
+
+        result_lookup[result.id] = result
+
+        rrf_scores[result.id] = (
+            rrf_scores.get(result.id, 0)
+            + 1 / (k + rank)
+        )
+
+    # -------------------------
+    # KEYWORD RESULTS
+    # -------------------------
+    for rank, result in enumerate(keyword_results, start=1):
+
+        if result.id in result_lookup:
+
+            # Preserve the object from vector search
+            # and copy the keyword score onto it.
+            result_lookup[result.id].keyword_score = (
+                result.keyword_score
+            )
+
+        else:
+
+            # This chunk only came from keyword search.
+            result_lookup[result.id] = result
+
+        rrf_scores[result.id] = (
+            rrf_scores.get(result.id, 0)
+            + 1 / (k + rank)
+        )
+
+    # -------------------------
+    # STORE RRF SCORE
+    # -------------------------
+    for result_id, rrf_score in rrf_scores.items():
+
+        result_lookup[result_id].rrf_score = rrf_score
+
+    # -------------------------
+    # SORT BY RRF SCORE
+    # -------------------------
+    ranked_ids = sorted(
+        rrf_scores,
+        key=rrf_scores.get,
+        reverse=True
+    )
+
+    return [
+        result_lookup[result_id]
+        for result_id in ranked_ids
+    ]

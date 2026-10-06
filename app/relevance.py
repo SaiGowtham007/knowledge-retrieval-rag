@@ -1,9 +1,10 @@
 def filter_relevant_results(
     results,
-    max_distance: float = 0.50
+    min_reranker_score: int = 60
 ):
     return [
         result
         for result in results
-        if result[12] <= max_distance
+        if result.reranker_score is not None
+        and result.reranker_score >= min_reranker_score
     ]

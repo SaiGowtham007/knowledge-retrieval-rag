@@ -1,4 +1,5 @@
 from app.database import get_connection
+from app.retrieval_models import RetrievedChunk
 
 
 def search_keyword_chunks(
@@ -40,9 +41,26 @@ def search_keyword_chunks(
                 )
             )
 
-            results = cursor.fetchall()
+            rows = cursor.fetchall()
 
-        return results
+        return [
+            RetrievedChunk(
+                id=row[0],
+                content=row[1],
+                document_name=row[2],
+                document_type=row[3],
+                source=row[4],
+                chunk_id=row[5],
+                page_number=row[6],
+                document_id=row[7],
+                document_version=row[8],
+                document_status=row[9],
+                effective_date=row[10],
+                owner=row[11],
+                keyword_score=row[12]
+            )
+            for row in rows
+        ]
 
     finally:
         connection.close()
