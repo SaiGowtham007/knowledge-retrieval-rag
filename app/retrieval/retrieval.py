@@ -4,43 +4,31 @@ from app.database import get_connection
 def search_similar_chunks(
     query_embedding: list[float],
     top_k: int = 3,
-    document_status: str | None = None
+    document_status: str | None = None,
+    document_version: str | None = None
 ):
     connection = get_connection()
 
     try:
         with connection.cursor() as cursor:
+
+            filters = []
+            filter_parameters = []
+
             if document_status:
-                cursor.execute(
-                    """
-                    SELECT
-                        id,
-                        content,
-                        document_name,
-                        document_type,
-                        source,
-                        chunk_id,
-                        page_number,
-                        document_id,
-                        document_version,
-                        document_status,
-                        effective_date,
-                        owner,
-                        embedding <=> %s::vector AS distance
-                    FROM document_chunks
-                    WHERE document_status = %s
-                    ORDER BY embedding <=> %s::vector
-                    LIMIT %s
-                    """,
-                    (
-                        query_embedding,
-                        document_status,
-                        query_embedding,
-                        top_k
-                    )
-                )
-            else:cursor.execute(
-                """
+                filters.append("document_status = %s")
+                filter_parameters.append(document_status)
+
+            if document_version:
+                filters.append("document_version = %s")
+                filter_parameters.append(document_version)
+
+            where_clause = ""
+
+            if filters:
+                where_clause = "WHERE " + " AND ".join(filters)
+
+            query = f"""
                 SELECT
                     id,
                     content,
@@ -56,14 +44,21 @@ def search_similar_chunks(
                     owner,
                     embedding <=> %s::vector AS distance
                 FROM document_chunks
+                {where_clause}
                 ORDER BY embedding <=> %s::vector
                 LIMIT %s
-                """,
-                (
-                    query_embedding,
-                    query_embedding,
-                    top_k
-                )
+            """
+
+            parameters = [
+                query_embedding,
+                *filter_parameters,
+                query_embedding,
+                top_k
+            ]
+
+            cursor.execute(
+                query,
+                parameters
             )
 
             results = cursor.fetchall()
