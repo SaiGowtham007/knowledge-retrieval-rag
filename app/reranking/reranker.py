@@ -77,10 +77,7 @@ def rerank_results(
         score = int(
             response.choices[0].message.content.strip()
         )
-        print(
-        f"RERANKER: chunk={result.chunk_id}, "
-        f"raw_score={response.choices[0].message.content}"
-        )
+        
         result.reranker_score = score
         scored_results.append(result)
 
